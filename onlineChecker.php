@@ -9,14 +9,16 @@ $response = array();
 
 
 //check for existing username and email.
-function isUserExist($con,$androidId,$username){
-	$result = mysqli_query($con,"SELECT id FROM device WHERE username = '".$username."' AND androidId = ".$androidId."'");
+function isUserExist($con,$androidId,$username,$email){
+	$sql = "SELECT * FROM `access`,`owner` WHERE owner.email = access.email AND owner.android_id = '".$androidId."' AND owner.email='".$email."' AND access.username='".$username."'";
+
+	$result = mysqli_query($con,$sql);
 	$value = @mysqli_num_rows($result);
 
 	if ($value){
-		return 0;
+		return true;
 	}else{
-		return 1;
+		return false;
 	}
 }
 
@@ -27,12 +29,13 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 	//checking for not null value.
 	if(
 		isset($_POST['username']) and
-		isset($_POST['androidId']) ) {
+		isset($_POST['androidId']) and 
+		isset($_POST['email']) ) {
 
 
-		if (isUserExist($con,$_POST['androidId'],$_POST['username'])){
+		if (isUserExist($con,$_POST['androidId'],$_POST['username'],$_POST['email'])){
 			//query for checking username and password.
-			$sql = "SELECT * FROM onlineList WHERE username = '".$_POST['username']."'";
+			$sql = "SELECT * FROM onlinelist WHERE username = '".$_POST['username']."'";
 
 			//executing query,
 			$result = mysqli_query($con,$sql);
