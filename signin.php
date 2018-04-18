@@ -7,25 +7,17 @@ include('dbconnect.php');
 //array for encoding data to JSON.
 $response = array();
 
-// function for update notification token.
-function updateToken($con, $token, $email){
-	$sql = "UPDATE `tokenlist` SET token = '".$token."' WHERE email = '".$email."'";
-	$result = mysqli_query($con,$sql);
-}
-
 
 //server request method.
 if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
 	//checking for not null value.
-	if(
-		isset($_POST['username']) and
-		 isset($_POST['password']) and 
-		  isset($_POST['token'])
-		   ) {
+	if(	isset($_POST['email']) and
+		isset($_POST['password'])
+		) {
 
 		//query for checking username and password.
-		$sql = "SELECT * FROM owner WHERE username = '".$_POST['username']."' AND password ='".$_POST['password']."'";
+		$sql = "SELECT * FROM `access`,`owner` WHERE access.email = owner.email AND owner.email = '".$_POST['email']."' AND owner.password = '".$_POST['password']."'";
 
 		//executing query,
 		$result = mysqli_query($con,$sql);
@@ -36,9 +28,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 		if ($value){
 			//fetching info.
 			$row = mysqli_fetch_array($result, MYSQLI_ASSOC);
-
-			//updating token.
-			updateToken($con,$_POST['token'],$row['email']);
 
 			//creating reply.
 			$response['error'] = false;

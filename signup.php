@@ -8,15 +8,10 @@ include('dbconnect.php');
 $response = array();
 
 
-
-function initTokenList($con,$username,$androidId,$email){
-	$sql = "INSERT INTO `tokenList` (`androidId`, `username`, `email`, `token`) VALUES ('".$androidId."', '".$username."', '".$email."', '');";
-	$result = mysqli_query($con,$sql);
-}
-
 //check for existing username and email.
-function isUserExist($con,$email,$username){
-	$result = mysqli_query($con,"SELECT id FROM owner WHERE username= '".$username."' OR email= '".$email."'");
+function isUserExist($con,$email){
+	$sql = "SELECT id FROM owner WHERE email= '".$email."'";
+	$result = mysqli_query($con,$sql);
 	$value = @mysqli_num_rows($result);
 	// echo $value;
 	if ($value){
@@ -26,33 +21,24 @@ function isUserExist($con,$email,$username){
 	}
 }
 
-//check for existing android ID and lock MAC.
-function isDeviceExist($con,$androidId,$lockMac){
-	$result = mysqli_query($con,"SELECT id FROM device WHERE androidId = '".$androidId."' OR lockMac = '".$lockMac."'");
-	$value = @mysqli_num_rows($result);
 
-	if ($value){
-		return 0;
-	}else{
-		return 1;
-	}
+function addAccess($con,$email,$username){
+	$sqlAccess = "INSERT INTO `access` (`email`, `username`) VALUES ('".$email."', '".$username."')";
+	$resultOwner = mysqli_query($con,$sqlAccess);
 }
+
 
 //server request method.
 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 
-
-
 //checking for not null value.
-	if(
-		isset($_POST['username']) and
-		 isset($_POST['password']) and
-		  isset($_POST['name']) and
-		   isset($_POST['address']) and
-		    isset($_POST['email']) and
-		      isset($_POST['phone']) and
-		      	isset($_POST['androidId']) and
-		      	  isset($_POST['lockMac'])
+	if(	isset($_POST['username']) and
+		isset($_POST['password']) and
+		isset($_POST['name']) and
+		isset($_POST['address']) and
+		isset($_POST['email']) and
+		isset($_POST['phone']) and
+		isset($_POST['androidId'])
 		) {
 
 
@@ -65,33 +51,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 		// echo $_POST['androidId'];
 		// echo $_POST['lockMac'];
 
-
-//verifying email username android ID and Lock MAC.
-		if (isUserExist($con,$_POST['email'], $_POST['username']) and isDeviceExist($con,$_POST['androidId'], $_POST['lockMac']) ){
+		if (isUserExist($con,$_POST['email'])){
 			
-			//inserting owner details to owner table. 
-			$resultOwner = mysqli_query($con,
-				"INSERT INTO `owner` 
-				(`id`, `username`, `password`, `name`, `address`, `email`, `phone`) 
-				VALUES 
-				(NULL, '".$_POST['username']."',
-				 '".$_POST['password']."',
-				  '".$_POST['name']."',
-				   '".$_POST['address']."',
-				    '".$_POST['email']."',
-				     '".$_POST['phone']."'
-				     );");
+			$sql = "INSERT INTO `owner` (`id`, `password`, `name`, `address`, `email`, `phone`, `android_id`, `admin`) VALUES (NULL, '".$_POST['password']."', '".$_POST['name']."', '".$_POST['address']."', '".$_POST['email']."', '".$_POST['phone']."', '".$_POST['androidId']."', 'Y');";
 
-			//inserting device details into device table.
-			$resultDevice = mysqli_query($con,"
-				INSERT INTO `device` 
-				(`id`, `username`, `androidId`, `lockMac`) 
-				VALUES 
-				(NULL, '".$_POST['username']."', '".$_POST['androidId']."', '".$_POST['lockMac']."');
-				");
+			$resultOwner = mysqli_query($con,$sql);
 
-			
-			initTokenList($con,$_POST['username'],$_POST['androidId'],$_POST['email']);
+			addAccess($con,$_POST['email'],$_POST['username']);
 
 			//creating reply.
 			$response['error'] = false;
@@ -105,25 +71,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 			// $response['phone'] = $_POST['phone'];
 
 		}else{
-
 			//when username or email or lock MAC or android ID already exist.
 			$response['error'] = true;
 			$response['message'] = "already exist";
 		}
-	
 	}else{
-
 		//when some value null.
 		$response['error'] = true;
 		$response['message'] = "Missing";
-	
 	}
-
-
 }else{
 
 	//when request is not POST.
-	$response['error'] = false;
+	$response['error'] = true;
 	$response['message'] = "Invalid Request";
 }
 
