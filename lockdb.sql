@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Apr 18, 2018 at 10:52 PM
+-- Generation Time: Apr 19, 2018 at 08:44 PM
 -- Server version: 10.1.31-MariaDB
 -- PHP Version: 7.2.4
 
@@ -30,15 +30,17 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `access` (
   `email` varchar(255) NOT NULL,
-  `username` varchar(255) NOT NULL
+  `username` varchar(255) NOT NULL,
+  `enable` enum('Y','N') NOT NULL DEFAULT 'Y'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `access`
 --
 
-INSERT INTO `access` (`email`, `username`) VALUES
-('suvambasak2008@gmail.com', 'basak');
+INSERT INTO `access` (`email`, `username`, `enable`) VALUES
+('suvambasak1@gmail.com', 'basak', 'Y'),
+('suvambasak2008@gmail.com', 'basak', 'Y');
 
 -- --------------------------------------------------------
 
@@ -49,15 +51,16 @@ INSERT INTO `access` (`email`, `username`) VALUES
 CREATE TABLE `device` (
   `id` int(11) NOT NULL,
   `username` varchar(255) NOT NULL,
-  `lock_mac` varchar(255) NOT NULL
+  `lock_mac` varchar(255) NOT NULL,
+  `owner_email` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `device`
 --
 
-INSERT INTO `device` (`id`, `username`, `lock_mac`) VALUES
-(1, 'basak', 'MAC');
+INSERT INTO `device` (`id`, `username`, `lock_mac`, `owner_email`) VALUES
+(1, 'basak', 'MAC', 'suvambasak2008@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -82,6 +85,13 @@ CREATE TABLE `membercode` (
   `username` varchar(255) NOT NULL,
   `code` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `membercode`
+--
+
+INSERT INTO `membercode` (`id`, `username`, `code`) VALUES
+(3, 'basak', 'FQBDqG3GTg3KbBgB5LaqaoD0TZhBqYrXS');
 
 -- --------------------------------------------------------
 
@@ -146,7 +156,8 @@ CREATE TABLE `owner` (
 --
 
 INSERT INTO `owner` (`id`, `password`, `name`, `address`, `email`, `phone`, `android_id`, `admin`) VALUES
-(1, 'pass', 'Suvam Basak', 'kolkata', 'suvambasak2008@gmail.com', '9051446080', 'android', 'Y');
+(1, '1a1dc91c907325c69271ddf0c944bc72', 'Suvam Basak', 'kolkata', 'suvambasak2008@gmail.com', '9051446080', 'cf7586113ca53f2153e1ffac50755710', 'Y'),
+(2, '1a1dc91c907325c69271ddf0c944bc72', 'Aritra', 'kalyani', 'suvambasak1@gmail.com', '9051446088', '46d550fd4216a595dead885eec8ec34', 'N');
 
 -- --------------------------------------------------------
 
@@ -165,7 +176,8 @@ CREATE TABLE `tokenlist` (
 --
 
 INSERT INTO `tokenlist` (`username`, `email`, `token`) VALUES
-('basak', 'suvambasak2008@gmail.com', 'TOKEN');
+('basak', 'suvambasak1@gmail.com', 'cdtjRpZ0HkY:APA91bHjpS3BVnQGQjF1Pe4a2vZXZtPFJ5oIsJMSwwQh1aEDgljYRNY9on6_aywmhahRg9XOym7fqrwNQuJQrhXcMhRP0TCMttTCgUo_BoFFgb1jBpRXrMwgmCDhAim0GkoyXINAVCqZ'),
+('basak', 'suvambasak2008@gmail.com', 'fHeX9o-aIg8:APA91bH5m_ExNWu-udqGIEdgyyoD9xReGqjab0qO85mXhfZNP7AeiUExrjCOE_-r6e9But-LaXnhzOob_bmlvVQA9KvnIrSoa8bLYZ5yb6z1dyzXmLSu3ILUOPmdUayb8v5Mrf7XlccR');
 
 --
 -- Indexes for dumped tables
@@ -249,7 +261,7 @@ ALTER TABLE `imagebackup`
 -- AUTO_INCREMENT for table `membercode`
 --
 ALTER TABLE `membercode`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `memberdetails`
@@ -273,7 +285,7 @@ ALTER TABLE `onlinelist`
 -- AUTO_INCREMENT for table `owner`
 --
 ALTER TABLE `owner`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
