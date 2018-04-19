@@ -21,9 +21,21 @@ function isUserExist($con,$email){
 	}
 }
 
+function auth($con,$email,$username){
+	$sql = "SELECT id FROM `device` WHERE owner_email = '".$email."' AND username = '".$username."'";
+	$result = mysqli_query($con,$sql);
+	$value = @mysqli_num_rows($result);
+	// echo $value;
+	if ($value){
+		return 1;
+	}else{
+		return 0;
+	}	
+}
+
 
 function addAccess($con,$email,$username){
-	$sqlAccess = "INSERT INTO `access` (`email`, `username`) VALUES ('".$email."', '".$username."')";
+	$sqlAccess = "INSERT INTO `access` (`email`, `username`, `enable`) VALUES ('".$email."', '".$username."', 'Y');";
 	$resultOwner = mysqli_query($con,$sqlAccess);
 }
 
@@ -51,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 		// echo $_POST['androidId'];
 		// echo $_POST['lockMac'];
 
-		if (isUserExist($con,$_POST['email'])){
+		if (isUserExist($con,$_POST['email']) and auth($con,$_POST['email'],$_POST['username'])){
 			
 			$sql = "INSERT INTO `owner` (`id`, `password`, `name`, `address`, `email`, `phone`, `android_id`, `admin`) VALUES (NULL, '".$_POST['password']."', '".$_POST['name']."', '".$_POST['address']."', '".$_POST['email']."', '".$_POST['phone']."', '".$_POST['androidId']."', 'Y');";
 

@@ -46,7 +46,7 @@
 				$result = mysqli_query($con,$ownersql);
 
 
-				$accesssql = "INSERT INTO `access` (`email`, `username`) VALUES ('".$_POST['email']."', '".$_POST['username']."')";
+				$accesssql = "INSERT INTO `access` (`email`, `username`, `enable`) VALUES ('".$_POST['email']."', '".$_POST['username']."', 'Y')";
 				$result = mysqli_query($con,$accesssql);
 
 

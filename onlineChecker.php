@@ -10,7 +10,7 @@ $response = array();
 
 //check for existing username and email.
 function isUserExist($con,$androidId,$username,$email){
-	$sql = "SELECT * FROM `access`,`owner` WHERE owner.email = access.email AND owner.android_id = '".$androidId."' AND owner.email='".$email."' AND access.username='".$username."'";
+	$sql = "SELECT * FROM `access`,`owner` WHERE owner.email = access.email AND owner.android_id = '".$androidId."' AND owner.email='".$email."' AND access.username='".$username."' AND access.enable = 'Y'";
 
 	$result = mysqli_query($con,$sql);
 	$value = @mysqli_num_rows($result);
@@ -63,6 +63,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 				$response['message'] = "Not Found";
 				$response['status'] = "Offline";
 			}
+		}else{
+			//when username and android is null.
+			$response['error'] = true;
+			$response['message'] = "Permission deny";	
+			$response['status'] = "Access Deny";
 		}
 
 	}else{
