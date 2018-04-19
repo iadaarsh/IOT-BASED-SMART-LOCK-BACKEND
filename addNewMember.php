@@ -15,15 +15,18 @@
 	}
 
 
-	function verifyRequest($con,$androidId,$username){
-		$sql = "SELECT id FROM `device` WHERE username = '".$username."' AND androidId = '".$androidId."'";
+	function verifyRequest($con,$androidId,$username,$email){
+		$sql = "SELECT * FROM `owner`, `access` WHERE owner.email = '".$email."' AND owner.android_id
+ = '".$androidId."' AND access.username = '".$username."' AND owner.email = access.email AND admin = 'Y'";
+
 		$result = mysqli_query($con,$sql);
 		$value = @mysqli_num_rows($result);
 
 		if($value){
 			$result = mysqli_query($con,"
-				DELETE FROM memberCode WHERE username = '".$username."'
+				DELETE FROM membercode WHERE username = '".$username."'
 				");
+
 			return true;
 		}
 		return false;
@@ -32,13 +35,15 @@
 
 	if($_SERVER['REQUEST_METHOD'] == 'POST'){
 		if( isset($_POST['androidId']) and 
-			isset($_POST['username'])
+			isset($_POST['username']) and 
+			isset($_POST['email']) 
 			) {
 
-			if(verifyRequest($con,$_POST['androidId'],$_POST['username'])){
+			if(verifyRequest($con,$_POST['androidId'],$_POST['username'],$_POST['email'])){
 
 				$code = randomPassword();
-				$sql = "INSERT INTO `memberCode` (`id`, `username`, `code`) VALUES (NULL, '".$_POST['username']."', '".$code."');";
+				$sql = "INSERT INTO `membercode` (`id`, `username`, `code`) VALUES (NULL, '".$_POST['username']."', '".$code."')";
+
 				$result = mysqli_query($con,$sql);
 
 				$key = $_POST['username'].'/'.$code;

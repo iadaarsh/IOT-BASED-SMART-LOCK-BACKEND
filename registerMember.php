@@ -3,7 +3,7 @@
 	$response = array();
 
 	function uniqueCheck($con,$email){
-		$sql = "SELECT id FROM `memberDetails` WHERE email = '".$email."'";
+		$sql = "SELECT id FROM `owner` WHERE email = '".$email."'";
 		$result = mysqli_query($con,$sql);
 		$value = @mysqli_num_rows($result);
 		if ($value) return false;
@@ -12,12 +12,12 @@
 
 
 	function verifiyKey($con,$username,$key){
-		$sql = "SELECT * FROM `memberCode` WHERE username = '".$username."' AND code = '".$key."'";
+		$sql = "SELECT id FROM `membercode` WHERE username = '".$username."' AND code = '".$key."'";
 		$result = mysqli_query($con,$sql);
 		$value = @mysqli_num_rows($result);
 		if($value) {
 			$deleteKey = mysqli_query($con,"
-				DELETE FROM `memberCode` WHERE code = '".$key."';
+				DELETE FROM `membercode` WHERE code = '".$key."';
 				");
 			return true;
 		}
@@ -34,26 +34,28 @@
 			isset($_POST['address']) and
 			isset($_POST['email']) and
 			isset($_POST['androidId']) and
-			isset($_POST['token']) and
-			isset($_POST['phone'])
+			isset($_POST['phone']) and
+			isset($_POST['password'])
 		) {
 			if(uniqueCheck($con,$_POST['email']) and 
 				verifiyKey($con,$_POST['username'],$_POST['key'])
 				){
 
-				$sql = "INSERT INTO `memberDetails` (`id`, `username`, `androidId`, `name`, `address`, `email`, `phone`) VALUES (NULL, '".$_POST['username']."', '".$_POST['androidId']."', '".$_POST['name']."', '".$_POST['address']."', '".$_POST['email']."', '".$_POST['phone']."');";
-				$result = mysqli_query($con,$sql);
 
-				$sql = "INSERT INTO `tokenList` (`androidId`, `username`, `email`, `token`) VALUES ('".$_POST['androidId']."', '".$_POST['username']."', '".$_POST['email']."', '".$_POST['token']."');";
+				$ownersql = "INSERT INTO `owner` (`id`, `password`, `name`, `address`, `email`, `phone`, `android_id`, `admin`) VALUES (NULL, '".$_POST['password']."', '".$_POST['name']."', '".$_POST['address']."', '".$_POST['email']."', '".$_POST['phone']."', '".$_POST['androidId']."', 'N')";
+				$result = mysqli_query($con,$ownersql);
 
-				$result = mysqli_query($con,$sql);
+
+				$accesssql = "INSERT INTO `access` (`email`, `username`) VALUES ('".$_POST['email']."', '".$_POST['username']."')";
+				$result = mysqli_query($con,$accesssql);
+
 
 				$response['error'] = false;
 				$response['message'] = "Member registered.";
 
 			} else {
 				$response['error'] = true;
-				$response['message'] = "Email ID alread inside or you key is expired!!";
+				$response['message'] = "Email ID already inside or you key is expired!!";
 			}
 		} else {
 			$response['error'] = true;
