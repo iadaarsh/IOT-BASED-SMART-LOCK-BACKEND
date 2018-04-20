@@ -84,7 +84,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
 	echo $imageId;
 
 
-	$sql = "SELECT token FROM `tokenlist` WHERE username = '".$username."'";
+	$sql = "SELECT token FROM `tokenlist`,`access` WHERE access.username = '".$username."' AND access.enable = 'Y' AND access.email = tokenlist.email";
 	$result = mysqli_query($con,$sql);
 
 	while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
