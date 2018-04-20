@@ -18,7 +18,7 @@
 		$id = $_GET['imageId'];
 
 
-		$sql = "SELECT path FROM `imageBackup` WHERE id = '$id'";
+		$sql = "SELECT path FROM `imagebackup` WHERE id = '$id'";
 		
 		$result = mysqli_query($con,$sql);
 		$value = @mysqli_num_rows($result);
@@ -34,13 +34,11 @@
 
 			echo base64_decode($image);
 
-		}
-
-		// } else {
-			// $image = file_get_contents('wrongInput');
-			// header('Content-Type: image/png');
-			// echo base64_decode($image);
-		// }	
+		} else {
+			$image = file_get_contents('wrongInput');
+			header('Content-Type: image/png');
+			echo base64_decode($image);
+		}	
 
 	} else {
 		$image = file_get_contents('wrongInput');
